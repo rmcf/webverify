@@ -4,7 +4,7 @@
       <!-- toolbar -->
       <q-toolbar class="bg-white text-blue-grey-8">
         <q-avatar>
-          <img src="/img/logo.svg" />
+          <img src="/webverify/img/logo.svg" />
         </q-avatar>
 
         <q-toolbar-title>
@@ -35,7 +35,7 @@
     </q-drawer>
 
     <!-- banner -->
-    <q-parallax :height="400" src="/img/banner.jpg">
+    <q-parallax :height="400" src="/webverify/img/banner.jpg">
       <div class="flex flex-center">
         <h2 class="text-white banner-text">
           Digital Signature Verification
