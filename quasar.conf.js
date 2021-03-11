@@ -9,7 +9,6 @@
 
 module.exports = function(/* ctx */) {
   return {
-    publicPath: "/webverify/",
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: false,
 
@@ -40,6 +39,7 @@ module.exports = function(/* ctx */) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      publicPath: "webverify",
       vueRouterMode: "history", // available values: 'hash', 'history'
 
       // transpile: false,
