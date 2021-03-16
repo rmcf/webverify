@@ -1,29 +1,43 @@
 <template>
-  <q-page>
+  <q-page class="div-container">
     <div class="q-gutter-md q-pa-sm">
-      <q-card class="my-card">
-        <q-card-section>
+      <q-card>
+        <q-card-section class="bg-amber text-grey-10">
+          <div class="text-h5">Upload digitally signed document</div>
+          <div class="text-subtitle3">allowed formats: PDF, ZIP</div>
+        </q-card-section>
+        <q-card-section class="q-pa-lg">
+          <!-- basic input
+          <div class="q-mb-lg">
+            <input type="file" @change="basicFileInput" />
+          </div> -->
+
+          <!-- quasar file picker -->
           <div>
-            <q-uploader
-              label="Upload files"
-              color="amber"
-              text-color="black"
-              multiple
-              batch
-              flat
-              no-thumbnails
-              style="width: 100%"
-            />
+            <q-file
+              color="primary"
+              v-model="model"
+              clearable
+              @input="quasarFileInput"
+              label="Upload file"
+            >
+              <template v-slot:prepend>
+                <q-icon name="attach_file" />
+              </template>
+            </q-file>
           </div>
+
+          <!-- form buttons -->
           <div class="row justify-end">
             <q-btn
-              class="q-ml-sm q-mt-md"
+              class="q-mt-md"
               label="Verify"
               type="submit"
               color="primary"
             />
             <q-btn
-              label="Remove all"
+              @click="removeResult"
+              label="Remove"
               type="reset"
               color="red"
               flat
@@ -33,8 +47,10 @@
         </q-card-section>
       </q-card>
 
-      <div>
-        <q-card class="q-mt-lg">
+      <div v-if="content" class="file-content">{{ content }}</div>
+
+      <div class="q-mt-lg">
+        <q-card>
           <q-tabs
             v-model="tab"
             dense
@@ -84,37 +100,50 @@ export default {
 
   data() {
     return {
-      name: null,
-      age: null,
-      model: null,
-      accept: false,
-      tab: "simple"
+      content: null,
+      tab: "simple",
+      model: null
     };
   },
 
   methods: {
-    onSubmit() {
-      if (this.accept !== true) {
-        this.$q.notify({
-          color: "red-5",
-          textColor: "white",
-          icon: "warning",
-          message: "You need to accept the license and terms first"
-        });
+    // basic file input
+    // basicFileInput(ev) {
+    //   console.log("Function starting");
+    //   const file = ev.target.files[0];
+    //   const reader = new FileReader();
+
+    //   reader.onload = e => (this.content = e.target.result);
+    //   reader.readAsDataURL(file);
+    // },
+
+    // async file reading function
+    readFileAsync(file) {
+      return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+
+        reader.onload = () => {
+          resolve(reader.result);
+        };
+
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+      });
+    },
+
+    // quasar file input
+    async quasarFileInput(file) {
+      if (file) {
+        this.content = await this.readFileAsync(file);
       } else {
-        this.$q.notify({
-          color: "green-4",
-          textColor: "white",
-          icon: "cloud_done",
-          message: "Submitted"
-        });
+        this.content = null;
       }
     },
 
-    onReset() {
-      this.name = null;
-      this.age = null;
-      this.accept = false;
+    // clean button
+    removeResult() {
+      this.content = null;
     }
   }
 };
@@ -122,7 +151,55 @@ export default {
 
 <style>
 .q-uploader__list {
-  height: 20rem;
+  height: 10rem;
   background-color: #fafafa;
+}
+
+.div-container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.file-content {
+  word-wrap: break-word;
+  overflow-y: scroll;
+  height: 300px;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (max-width: 576px) {
+  .div-container {
+    max-width: 100%;
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .div-container {
+    max-width: 540px;
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .div-container {
+    max-width: 720px;
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .div-container {
+    max-width: 960px;
+  }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .div-container {
+    max-width: 1140px;
+  }
 }
 </style>

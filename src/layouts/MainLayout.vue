@@ -44,7 +44,7 @@
     </q-parallax>
 
     <!-- page container -->
-    <q-page-container class="page-container">
+    <q-page-container>
       <router-view />
     </q-page-container>
   </q-layout>
@@ -83,11 +83,6 @@ export default {
 <style scoped>
 .q-toolbar .q-avatar {
   border-radius: 0;
-}
-
-.page-container {
-  padding-left: 10rem;
-  padding-right: 10rem;
 }
 
 .banner-text {
