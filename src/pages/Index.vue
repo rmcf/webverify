@@ -1,6 +1,6 @@
 <template>
   <q-page class="div-container">
-    <div class="q-gutter-md q-pa-sm">
+    <div class="q-pa-sm">
       <q-card>
         <q-card-section class="bg-amber text-grey-10">
           <div class="text-h5">Upload digitally signed document</div>
@@ -36,8 +36,8 @@
               color="primary"
             />
             <q-btn
-              @click="removeResult"
-              label="Remove"
+              @click="receiveAnswer"
+              label="Answer"
               type="reset"
               color="red"
               flat
@@ -47,10 +47,11 @@
         </q-card-section>
       </q-card>
 
-      <div v-if="content" class="file-content">{{ content }}</div>
+      <div v-if="query.signedDocument.bytes" class="q-mt-lg file-content">
+        {{ query.signedDocument.bytes }}
+      </div>
 
-      <div class="q-mt-lg">
-        <q-card>
+      <!-- <q-card>
           <q-tabs
             v-model="tab"
             dense
@@ -60,9 +61,6 @@
             align="left"
           >
             <q-tab name="simple" label="Simple Report" />
-            <q-tab name="detailed" label="Detailed Report" />
-            <q-tab name="diagnostic" label="Diagnostic Tree" />
-            <q-tab name="etsi" label="ETSI Validation Report" />
           </q-tabs>
 
           <q-separator />
@@ -70,26 +68,66 @@
           <q-tab-panels v-model="tab" animated>
             <q-tab-panel name="simple">
               <div class="text-h6">Simple Report</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            </q-tab-panel>
-
-            <q-tab-panel name="detailed">
-              <div class="text-h6">Detailed Report</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            </q-tab-panel>
-
-            <q-tab-panel name="diagnostic">
-              <div class="text-h6">Diagnostic Tree</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            </q-tab-panel>
-
-            <q-tab-panel name="etsi">
-              <div class="text-h6">ETSI Validation Report</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              <p v-if="answer">
+                {{ answer.SimpleReport.ValidationPolicy.PolicyDescription }}
+              </p>
             </q-tab-panel>
           </q-tab-panels>
-        </q-card>
+        </q-card> -->
+
+      <div class="text-h4 text-center margin-top">
+        Validation results
       </div>
+      <div
+        class="text-h6 text-weight-light text-center text-blue-grey-5 q-mb-lg"
+      >
+        (Simple Report)
+      </div>
+
+      <!-- expanded list -->
+      <q-list class="q-mt-lg q-mb-lg">
+        <q-expansion-item
+          header-class="bg-primary text-white"
+          expand-icon-class="text-white"
+          class="shadow-1 overflow-hidden"
+          style="border-radius: 3px"
+          default-opened
+          expand-separator
+          icon="link"
+          label="Signature S-EC27BBA27F938B7266BA0460B43812AAEF5F32C034FE398F25CF343974308B72"
+        >
+          <q-separator />
+          <q-card>
+            <q-card-section>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
+              eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
+              dolorum officiis modi facere maiores architecto suscipit iste
+              eveniet doloribus ullam aliquid.
+            </q-card-section>
+          </q-card>
+        </q-expansion-item> </q-list
+      ><q-list class="q-mt-lg q-mb-lg">
+        <q-expansion-item
+          header-class="bg-primary text-white"
+          expand-icon-class="text-white"
+          class="shadow-1 overflow-hidden"
+          style="border-radius: 3px"
+          default-opened
+          expand-separator
+          icon="link"
+          label="Signature S-EC27BBA27F938B7266BA0460B43812AAEF5F32C034FE398F25CF343974308B72"
+        >
+          <q-separator />
+          <q-card>
+            <q-card-section>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
+              eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
+              dolorum officiis modi facere maiores architecto suscipit iste
+              eveniet doloribus ullam aliquid.
+            </q-card-section>
+          </q-card>
+        </q-expansion-item>
+      </q-list>
     </div>
   </q-page>
 </template>
@@ -100,7 +138,16 @@ export default {
 
   data() {
     return {
-      content: null,
+      query: {
+        signedDocument: {
+          bytes: "",
+          digestAlgorithm: null,
+          name: "test.pdf"
+        },
+        policy: null,
+        signatureId: null
+      },
+      answer: null,
       tab: "simple",
       model: null
     };
@@ -121,7 +168,6 @@ export default {
     readFileAsync(file) {
       return new Promise((resolve, reject) => {
         let reader = new FileReader();
-
         reader.onload = () => {
           resolve(reader.result);
         };
@@ -135,15 +181,23 @@ export default {
     // quasar file input
     async quasarFileInput(file) {
       if (file) {
-        this.content = await this.readFileAsync(file);
+        let pdfBase64 = await this.readFileAsync(file);
+        let pdfBase64String = String(pdfBase64);
+        let pdfBase64Clean = pdfBase64String.replace(/^.*,/i, "");
+        this.query.signedDocument.bytes = pdfBase64Clean;
       } else {
-        this.content = null;
+        this.query.signedDocument.bytes = "";
       }
     },
 
-    // clean button
-    removeResult() {
-      this.content = null;
+    // render query answer
+    async receiveAnswer() {
+      const response = await fetch("json/answer.json");
+      if (response.ok) {
+        this.answer = await response.json();
+      } else {
+        alert("Data Error");
+      }
     }
   }
 };
@@ -166,6 +220,10 @@ export default {
   word-wrap: break-word;
   overflow-y: scroll;
   height: 300px;
+}
+
+.margin-top {
+  margin-top: 2em;
 }
 
 /* Small devices (landscape phones, 576px and up) */
