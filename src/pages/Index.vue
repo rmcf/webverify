@@ -2,16 +2,12 @@
   <q-page class="div-container">
     <div class="q-pa-sm">
       <q-card>
-        <q-card-section class="bg-amber text-grey-10">
-          <div class="text-h5">Upload digitally signed document</div>
+        <q-card-section class="bg-amber-5 text-grey-9">
+          <div class="text-h5">Upload signed document</div>
           <div class="text-subtitle3">allowed formats: PDF, ZIP</div>
         </q-card-section>
-        <q-card-section class="q-pa-lg">
-          <!-- basic input
-          <div class="q-mb-lg">
-            <input type="file" @change="basicFileInput" />
-          </div> -->
 
+        <q-card-section class="q-pa-lg">
           <!-- quasar file picker -->
           <div>
             <q-file
@@ -43,91 +39,232 @@
               flat
               class="q-ml-sm q-mt-md"
             />
+            <q-btn
+              @click="postDocument"
+              label="Post"
+              type="reset"
+              color="green"
+              flat
+              class="q-ml-sm q-mt-md"
+            />
           </div>
         </q-card-section>
       </q-card>
 
       <div v-if="query.signedDocument.bytes" class="q-mt-lg file-content">
-        {{ query.signedDocument.bytes }}
+        <div class="text-center"><p>PDF to base64</p></div>
+        <div>{{ query.signedDocument.bytes }}</div>
+      </div>
+      <div v-if="query.signedDocument.bytes" class="q-mt-lg file-content">
+        <div class="text-center"><p>Query JSON</p></div>
+        <div>{{ query }}</div>
       </div>
 
-      <!-- <q-card>
-          <q-tabs
-            v-model="tab"
-            dense
-            class="text-grey"
-            active-color="primary"
-            indicator-color="primary"
-            align="left"
+      <!-- response -->
+      <q-card v-if="answer" class="margin-top">
+        <!-- response header -->
+        <q-card-section class="bg-blue-5 text-white">
+          <div class="text-h5">Validation results</div>
+          <div class="text-subtitle3">Simple Report</div>
+        </q-card-section>
+
+        <q-card-section style="padding: 2rem 4rem 2rem 4rem">
+          <!-- validation policy -->
+          <div class="q-mb-md">
+            <q-card flat bordered>
+              <q-card-section class="text-body1">
+                Validation Policy :
+                {{ answer.ValidationPolicy.PolicyName }}
+              </q-card-section>
+              <q-separator inset />
+              <q-card-section>
+                {{ answer.ValidationPolicy.PolicyDescription }}
+              </q-card-section>
+            </q-card>
+          </div>
+
+          <!-- signatures array -->
+          <div
+            v-for="(signature, index) in answer.signatureOrTimestamp"
+            :key="signature.Signature.Id"
+            class="q-mb-md"
           >
-            <q-tab name="simple" label="Simple Report" />
-          </q-tabs>
+            <q-list bordered class="rounded-borders">
+              <q-expansion-item
+                header-class="bg-blue-grey-1"
+                class="overflow-hidden"
+                style="border-radius: 4px"
+                expand-icon-class="text-black"
+                expand-separator
+                icon="link"
+                :label="signature.Signature.Id"
+              >
+                <q-card>
+                  <q-card-section>
+                    <q-markup-table
+                      flat
+                      dense
+                      separator="none"
+                      class="signature-data"
+                    >
+                      <tbody>
+                        <tr>
+                          <td class="text-left">
+                            Qualification:
+                          </td>
+                          <td class="text-left">
+                            {{ signature.Signature.SignatureLevel.value }}
+                            <span>
+                              <q-icon
+                                name="info_outline"
+                                class="text-primary"
+                                size="sm"
+                              />
+                              <q-tooltip
+                                transition-show="scale"
+                                transition-hide="scale"
+                                content-style="font-size: 12px"
+                              >
+                                {{
+                                  signature.Signature.SignatureLevel.description
+                                }}
+                              </q-tooltip>
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-left">Signature format:</td>
+                          <td class="text-left">
+                            {{ signature.Signature.SignatureFormat }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-left">Indication:</td>
+                          <td class="text-left">
+                            <q-chip
+                              dense
+                              square
+                              color="teal"
+                              text-color="white"
+                              icon="check_circle"
+                            >
+                              {{ signature.Signature.Indication }}
+                            </q-chip>
+                          </td>
+                        </tr>
+                        <tr
+                          v-for="warning in signature.Signature.Warnings"
+                          :key="warning.key"
+                        >
+                          <td class="text-left"></td>
+                          <td class="text-left text-orange-10">
+                            {{ warning }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-left">Certificate Chain:</td>
+                          <td class="text-left">
+                            <div
+                              v-for="(certificate, index) in signature.Signature
+                                .CertificateChain.Certificate"
+                              :key="index"
+                            >
+                              <q-icon name="done" size="sm" class="text-teal" />
+                              {{ certificate.qualifiedName }}
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-left">On claimed time:</td>
+                          <td class="text-left">
+                            {{ signature.Signature.SigningTime }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-left">Best signature time:</td>
+                          <td class="text-left">
+                            0000-00-00Z00:00:00
+                            <span>
+                              <q-icon
+                                name="info_outline"
+                                class="text-primary"
+                                size="sm"
+                              />
+                              <q-tooltip
+                                transition-show="scale"
+                                transition-hide="scale"
+                                content-style="font-size: 12px"
+                              >
+                                Lowest time at which there exists a proof of
+                                existence for the signature
+                              </q-tooltip>
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="text-left">Signature position:</td>
+                          <td class="text-left">
+                            {{ index + 1 }} out of
+                            {{ answer.signatureOrTimestamp.length }}
+                          </td>
+                        </tr>
+                        <tr
+                          v-for="(signaturescope, index) in signature.Signature
+                            .SignatureScope"
+                          :key="index"
+                        >
+                          <td class="text-left">Signature scope:</td>
+                          <td class="text-left">
+                            <div>
+                              {{ signaturescope.name }} ({{
+                                signaturescope.scope
+                              }})
+                            </div>
+                            <div>{{ signaturescope.value }}</div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </q-markup-table>
+                  </q-card-section>
+                </q-card>
+              </q-expansion-item>
+            </q-list>
+          </div>
 
-          <q-separator />
-
-          <q-tab-panels v-model="tab" animated>
-            <q-tab-panel name="simple">
-              <div class="text-h6">Simple Report</div>
-              <p v-if="answer">
-                {{ answer.SimpleReport.ValidationPolicy.PolicyDescription }}
-              </p>
-            </q-tab-panel>
-          </q-tab-panels>
-        </q-card> -->
-
-      <div class="text-h4 text-center margin-top">
-        Validation results
-      </div>
-      <div
-        class="text-h6 text-weight-light text-center text-blue-grey-5 q-mb-lg"
-      >
-        (Simple Report)
-      </div>
-
-      <!-- expanded list -->
-      <q-list class="q-mt-lg q-mb-lg">
-        <q-expansion-item
-          header-class="bg-primary text-white"
-          expand-icon-class="text-white"
-          class="shadow-1 overflow-hidden"
-          style="border-radius: 3px"
-          default-opened
-          expand-separator
-          icon="link"
-          label="Signature S-EC27BBA27F938B7266BA0460B43812AAEF5F32C034FE398F25CF343974308B72"
-        >
-          <q-separator />
-          <q-card>
-            <q-card-section>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
-              eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
-              dolorum officiis modi facere maiores architecto suscipit iste
-              eveniet doloribus ullam aliquid.
-            </q-card-section>
-          </q-card>
-        </q-expansion-item> </q-list
-      ><q-list class="q-mt-lg q-mb-lg">
-        <q-expansion-item
-          header-class="bg-primary text-white"
-          expand-icon-class="text-white"
-          class="shadow-1 overflow-hidden"
-          style="border-radius: 3px"
-          default-opened
-          expand-separator
-          icon="link"
-          label="Signature S-EC27BBA27F938B7266BA0460B43812AAEF5F32C034FE398F25CF343974308B72"
-        >
-          <q-separator />
-          <q-card>
-            <q-card-section>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quidem,
-              eius reprehenderit eos corrupti commodi magni quaerat ex numquam,
-              dolorum officiis modi facere maiores architecto suscipit iste
-              eveniet doloribus ullam aliquid.
-            </q-card-section>
-          </q-card>
-        </q-expansion-item>
-      </q-list>
+          <!-- document information -->
+          <div class="q-mb-md">
+            <q-card flat bordered>
+              <q-card-section class="text-body1">
+                Document Information
+              </q-card-section>
+              <q-separator inset />
+              <q-card-section>
+                <q-markup-table
+                  flat
+                  dense
+                  separator="none"
+                  class="signature-data"
+                >
+                  <tbody>
+                    <tr>
+                      <td class="text-left">Signatures status:</td>
+                      <td class="text-left text-green">
+                        {{ answer.signatureOrTimestamp.length }} valid
+                        signatures, out of
+                        {{ answer.signatureOrTimestamp.length }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="text-left">Document name:</td>
+                      <td class="text-left">{{ answer.DocumentName }}</td>
+                    </tr>
+                  </tbody>
+                </q-markup-table>
+              </q-card-section>
+            </q-card>
+          </div>
+        </q-card-section>
+      </q-card>
     </div>
   </q-page>
 </template>
@@ -154,16 +291,6 @@ export default {
   },
 
   methods: {
-    // basic file input
-    // basicFileInput(ev) {
-    //   console.log("Function starting");
-    //   const file = ev.target.files[0];
-    //   const reader = new FileReader();
-
-    //   reader.onload = e => (this.content = e.target.result);
-    //   reader.readAsDataURL(file);
-    // },
-
     // async file reading function
     readFileAsync(file) {
       return new Promise((resolve, reject) => {
@@ -194,10 +321,35 @@ export default {
     async receiveAnswer() {
       const response = await fetch("json/answer.json");
       if (response.ok) {
-        this.answer = await response.json();
+        let json = await response.json();
+        this.answer = await json.SimpleReport;
       } else {
         alert("Data Error");
       }
+    },
+
+    // post document
+    postDocument() {
+      const jsonObject = this.query;
+      const url =
+        "http://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
+      const urlProxy =
+        "/api/dss-webapp/services/rest/validation/validateSignature";
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(jsonObject)
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("Success:", data);
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
     }
   }
 };
@@ -223,7 +375,16 @@ export default {
 }
 
 .margin-top {
-  margin-top: 2em;
+  margin-top: 4em;
+}
+
+.signature-data tbody td {
+  vertical-align: top;
+  font-size: 14px;
+}
+
+.signature-data tbody td .q-chip {
+  font-size: 12px;
 }
 
 /* Small devices (landscape phones, 576px and up) */
