@@ -77,8 +77,9 @@ module.exports = function(/* ctx */) {
       // proxy
       proxy: {
         "/api": {
-          target: "http://webapp.edoc.link",
+          target: "http://webapp.edoc.link/",
           changeOrigin: true,
+          secure: false,
           pathRewrite: {
             "^/api": ""
           }

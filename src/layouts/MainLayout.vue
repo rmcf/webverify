@@ -11,7 +11,7 @@
           WebVerify
         </q-toolbar-title>
 
-        <q-btn flat round dense icon="info_outline" />
+        <q-btn flat label="ABOUT" color="primary" />
       </q-toolbar>
     </q-header>
 

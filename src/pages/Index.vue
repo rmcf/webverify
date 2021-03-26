@@ -1,6 +1,15 @@
 <template>
   <q-page class="div-container">
     <div class="q-pa-sm">
+      <div v-show="spinnerState">
+        <div class="q-pb-lg text-center">
+          <div>
+            <img src="/webverify/img/spinner.gif" alt="spinner" width="100px" />
+          </div>
+          <div class="q-mt-md text-primary">Loading...</div>
+        </div>
+      </div>
+
       <q-card>
         <q-card-section class="bg-amber-5 text-grey-9">
           <div class="text-h5">Upload signed document</div>
@@ -25,26 +34,19 @@
 
           <!-- form buttons -->
           <div class="row justify-end">
-            <q-btn
-              class="q-mt-md"
-              label="Verify"
-              type="submit"
-              color="primary"
-            />
-            <q-btn
-              @click="receiveAnswer"
-              label="Answer"
-              type="reset"
-              color="red"
-              flat
-              class="q-ml-sm q-mt-md"
-            />
-            <q-btn
+            <!-- <q-btn
               @click="postDocument"
-              label="Post"
+              label="Post fetch"
               type="reset"
               color="green"
               flat
+              class="q-ml-sm q-mt-md"
+            /> -->
+            <q-btn
+              @click="postDocumentAxios"
+              label="Verify"
+              type="reset"
+              color="primary"
               class="q-ml-sm q-mt-md"
             />
           </div>
@@ -117,7 +119,7 @@
                             <span>
                               <q-icon
                                 name="info_outline"
-                                class="text-primary"
+                                class="text-teal"
                                 size="sm"
                               />
                               <q-tooltip
@@ -187,7 +189,7 @@
                             <span>
                               <q-icon
                                 name="info_outline"
-                                class="text-primary"
+                                class="text-teal"
                                 size="sm"
                               />
                               <q-tooltip
@@ -270,11 +272,16 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "PageIndex",
 
   data() {
     return {
+      answer: null,
+      model: null,
+      loading: false,
       query: {
         signedDocument: {
           bytes: "",
@@ -283,10 +290,7 @@ export default {
         },
         policy: null,
         signatureId: null
-      },
-      answer: null,
-      tab: "simple",
-      model: null
+      }
     };
   },
 
@@ -307,6 +311,8 @@ export default {
 
     // quasar file input
     async quasarFileInput(file) {
+      this.loading = true;
+      this.answer = null;
       if (file) {
         let pdfBase64 = await this.readFileAsync(file);
         let pdfBase64String = String(pdfBase64);
@@ -315,6 +321,7 @@ export default {
       } else {
         this.query.signedDocument.bytes = "";
       }
+      this.loading = false;
     },
 
     // render query answer
@@ -328,28 +335,51 @@ export default {
       }
     },
 
-    // post document
-    postDocument() {
-      const jsonObject = this.query;
-      const url =
-        "http://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
-      const urlProxy =
-        "/api/dss-webapp/services/rest/validation/validateSignature";
+    // post document with fetch
+    // postDocument() {
+    //   console.log("Fetch post:");
+    //   const url =
+    //     "https://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
+    //   fetch(url, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json;charset=utf-8"
+    //     },
+    //     body: JSON.stringify(this.query)
+    //   })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       console.log("Success:", data);
+    //     })
+    //     .catch(error => {
+    //       console.log("Error:", error);
+    //     });
+    // },
 
-      fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+    // post document with AXIOS
+    async postDocumentAxios() {
+      this.loading = true;
+      const url =
+        "https://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
+      await axios.post(url, this.query).then(
+        response => {
+          this.answer = response.data.SimpleReport;
         },
-        body: JSON.stringify(jsonObject)
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("Success:", data);
-        })
-        .catch(error => {
-          console.error("Error:", error);
-        });
+        error => {
+          console.log(error);
+        }
+      );
+      this.loading = false;
+    }
+  },
+
+  computed: {
+    spinnerState: function() {
+      if (this.loading === true) {
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 };
