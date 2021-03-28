@@ -1,0 +1,284 @@
+{
+  "ValidationPolicy": {
+    "PolicyName": "QES AdESQC TL based",
+    "PolicyDescription": "Validate electronic signatures and indicates whether they are Advanced electronic Signatures (AdES), AdES supported by a Qualified Certificate (AdES/QC) or a\n\t\tQualified electronic Signature (QES). All certificates and their related chains supporting the signatures are validated against the EU Member State Trusted Lists (this includes\n\t\tsigner's certificate and certificates used to validate certificate validity status services - CRLs, OCSP, and time-stamps).\n\t"
+  },
+  "DocumentName": "different.pdf",
+  "ValidSignaturesCount": 0,
+  "SignaturesCount": 6,
+  "ContainerType": null,
+  "signatureOrTimestamp": [
+    {
+      "Signature": {
+        "SigningTime": "2020-11-05T12:19:25",
+        "BestSignatureTime": "2021-03-27T23:34:58",
+        "SignedBy": "CN=andrii3",
+        "SignatureLevel": { "value": "N/A", "description": "Not applicable" },
+        "SignatureScope": [
+          {
+            "value": "The document ByteRange : [0, 65688, 69804, 13962]",
+            "name": "Partial PDF",
+            "scope": "PARTIAL"
+          }
+        ],
+        "Filename": null,
+        "CertificateChain": {
+          "Certificate": [
+            {
+              "id": "C-51E20C50C39C9707B0301347FA5222953536B63A05E2388D941FF36ED74B6167",
+              "qualifiedName": "CN=andrii3"
+            },
+            {
+              "id": "C-34D72F984F096241BBD7764B38408698CB37EB7B9FC8E558C283A389C4568243",
+              "qualifiedName": "andrii"
+            }
+          ]
+        },
+        "Indication": "TOTAL_FAILED",
+        "SubIndication": "SIG_CRYPTO_FAILURE",
+        "Errors": [
+          "Unable to build a certificate chain until a trusted list!",
+          "The result of the LTV validation process is not acceptable to continue the process!",
+          "The certificate chain for signature is not trusted, it does not contain a trust anchor.",
+          "The signature is not intact!"
+        ],
+        "Warnings": [
+          "The signature/seal is not a valid AdES digital signature!"
+        ],
+        "Infos": [],
+        "Id": "S-B26B83241CE5E6BB87FFDF735B52F023A4ED5971ACE541D800C6A06210EEFDF1",
+        "CounterSignature": null,
+        "ParentId": null,
+        "SignatureFormat": "PAdES-BASELINE-B",
+        "ExtensionPeriodMin": null,
+        "ExtensionPeriodMax": null
+      }
+    },
+    {
+      "Signature": {
+        "SigningTime": "2020-11-05T12:19:36",
+        "BestSignatureTime": "2021-03-27T23:34:58",
+        "SignedBy": "CN=andrii3",
+        "SignatureLevel": { "value": "N/A", "description": "Not applicable" },
+        "SignatureScope": [
+          {
+            "value": "The document ByteRange : [0, 87813, 91929, 3622]",
+            "name": "Partial PDF",
+            "scope": "PARTIAL"
+          }
+        ],
+        "Filename": null,
+        "CertificateChain": {
+          "Certificate": [
+            {
+              "id": "C-51E20C50C39C9707B0301347FA5222953536B63A05E2388D941FF36ED74B6167",
+              "qualifiedName": "CN=andrii3"
+            },
+            {
+              "id": "C-34D72F984F096241BBD7764B38408698CB37EB7B9FC8E558C283A389C4568243",
+              "qualifiedName": "andrii"
+            }
+          ]
+        },
+        "Indication": "TOTAL_FAILED",
+        "SubIndication": "SIG_CRYPTO_FAILURE",
+        "Errors": [
+          "Unable to build a certificate chain until a trusted list!",
+          "The result of the LTV validation process is not acceptable to continue the process!",
+          "The certificate chain for signature is not trusted, it does not contain a trust anchor.",
+          "The signature is not intact!"
+        ],
+        "Warnings": [
+          "The signature/seal is not a valid AdES digital signature!"
+        ],
+        "Infos": [],
+        "Id": "S-10A11702E18923C000A98E3FDA1E08972D05F4C5874AA3F1FF0F6566D2FB4A36",
+        "CounterSignature": null,
+        "ParentId": null,
+        "SignatureFormat": "PAdES-BASELINE-B",
+        "ExtensionPeriodMin": null,
+        "ExtensionPeriodMax": null
+      }
+    },
+    {
+      "Signature": {
+        "SigningTime": "2020-11-05T12:19:47",
+        "BestSignatureTime": "2021-03-27T23:34:58",
+        "SignedBy": "CN=andrii3",
+        "SignatureLevel": { "value": "N/A", "description": "Not applicable" },
+        "SignatureScope": [
+          {
+            "value": "The document ByteRange : [0, 99445, 103561, 2682]",
+            "name": "Partial PDF",
+            "scope": "PARTIAL"
+          }
+        ],
+        "Filename": null,
+        "CertificateChain": {
+          "Certificate": [
+            {
+              "id": "C-51E20C50C39C9707B0301347FA5222953536B63A05E2388D941FF36ED74B6167",
+              "qualifiedName": "CN=andrii3"
+            },
+            {
+              "id": "C-34D72F984F096241BBD7764B38408698CB37EB7B9FC8E558C283A389C4568243",
+              "qualifiedName": "andrii"
+            }
+          ]
+        },
+        "Indication": "INDETERMINATE",
+        "SubIndication": "NO_CERTIFICATE_CHAIN_FOUND",
+        "Errors": [
+          "Unable to build a certificate chain until a trusted list!",
+          "The result of the LTV validation process is not acceptable to continue the process!",
+          "The certificate chain for signature is not trusted, it does not contain a trust anchor."
+        ],
+        "Warnings": [
+          "The signature/seal is an INDETERMINATE AdES digital signature!"
+        ],
+        "Infos": [],
+        "Id": "S-C6D9F1C5CC45C92246856EB2181D17E563D9919E604C6E05801F79CE88484E28",
+        "CounterSignature": null,
+        "ParentId": null,
+        "SignatureFormat": "PAdES-BASELINE-B",
+        "ExtensionPeriodMin": null,
+        "ExtensionPeriodMax": null
+      }
+    },
+    {
+      "Signature": {
+        "SigningTime": "2020-11-05T12:19:59",
+        "BestSignatureTime": "2021-03-27T23:34:58",
+        "SignedBy": "CN=andrii3",
+        "SignatureLevel": { "value": "N/A", "description": "Not applicable" },
+        "SignatureScope": [
+          {
+            "value": "The document ByteRange : [0, 110195, 114311, 2739]",
+            "name": "Partial PDF",
+            "scope": "PARTIAL"
+          }
+        ],
+        "Filename": null,
+        "CertificateChain": {
+          "Certificate": [
+            {
+              "id": "C-51E20C50C39C9707B0301347FA5222953536B63A05E2388D941FF36ED74B6167",
+              "qualifiedName": "CN=andrii3"
+            },
+            {
+              "id": "C-34D72F984F096241BBD7764B38408698CB37EB7B9FC8E558C283A389C4568243",
+              "qualifiedName": "andrii"
+            }
+          ]
+        },
+        "Indication": "INDETERMINATE",
+        "SubIndication": "NO_CERTIFICATE_CHAIN_FOUND",
+        "Errors": [
+          "Unable to build a certificate chain until a trusted list!",
+          "The result of the LTV validation process is not acceptable to continue the process!",
+          "The certificate chain for signature is not trusted, it does not contain a trust anchor."
+        ],
+        "Warnings": [
+          "The signature/seal is an INDETERMINATE AdES digital signature!"
+        ],
+        "Infos": [],
+        "Id": "S-DD1CA1F41874892A1BA433A134FC0CD8C9255728DD3072C52342DF736AF0AAB3",
+        "CounterSignature": null,
+        "ParentId": null,
+        "SignatureFormat": "PAdES-BASELINE-B",
+        "ExtensionPeriodMin": null,
+        "ExtensionPeriodMax": null
+      }
+    },
+    {
+      "Signature": {
+        "SigningTime": "2020-11-05T12:20:09",
+        "BestSignatureTime": "2021-03-27T23:34:58",
+        "SignedBy": "CN=andrii3",
+        "SignatureLevel": { "value": "N/A", "description": "Not applicable" },
+        "SignatureScope": [
+          {
+            "value": "The document ByteRange : [0, 121057, 125173, 2798]",
+            "name": "Partial PDF",
+            "scope": "PARTIAL"
+          }
+        ],
+        "Filename": null,
+        "CertificateChain": {
+          "Certificate": [
+            {
+              "id": "C-51E20C50C39C9707B0301347FA5222953536B63A05E2388D941FF36ED74B6167",
+              "qualifiedName": "CN=andrii3"
+            },
+            {
+              "id": "C-34D72F984F096241BBD7764B38408698CB37EB7B9FC8E558C283A389C4568243",
+              "qualifiedName": "andrii"
+            }
+          ]
+        },
+        "Indication": "TOTAL_FAILED",
+        "SubIndication": "SIG_CRYPTO_FAILURE",
+        "Errors": [
+          "Unable to build a certificate chain until a trusted list!",
+          "The result of the LTV validation process is not acceptable to continue the process!",
+          "The certificate chain for signature is not trusted, it does not contain a trust anchor.",
+          "The signature is not intact!"
+        ],
+        "Warnings": [
+          "The signature/seal is not a valid AdES digital signature!"
+        ],
+        "Infos": [],
+        "Id": "S-26807824EA52C80CC0DF9900803A06BB3EB6173977ACAC99964CF54D8AE74D5B",
+        "CounterSignature": null,
+        "ParentId": null,
+        "SignatureFormat": "PAdES-BASELINE-B",
+        "ExtensionPeriodMin": null,
+        "ExtensionPeriodMax": null
+      }
+    },
+    {
+      "Signature": {
+        "SigningTime": "2020-11-05T12:20:20",
+        "BestSignatureTime": "2021-03-27T23:34:58",
+        "SignedBy": "CN=andrii3",
+        "SignatureLevel": { "value": "N/A", "description": "Not applicable" },
+        "SignatureScope": [
+          { "value": "Full document", "name": "Full PDF", "scope": "FULL" }
+        ],
+        "Filename": null,
+        "CertificateChain": {
+          "Certificate": [
+            {
+              "id": "C-51E20C50C39C9707B0301347FA5222953536B63A05E2388D941FF36ED74B6167",
+              "qualifiedName": "CN=andrii3"
+            },
+            {
+              "id": "C-34D72F984F096241BBD7764B38408698CB37EB7B9FC8E558C283A389C4568243",
+              "qualifiedName": "andrii"
+            }
+          ]
+        },
+        "Indication": "TOTAL_FAILED",
+        "SubIndication": "SIG_CRYPTO_FAILURE",
+        "Errors": [
+          "Unable to build a certificate chain until a trusted list!",
+          "The result of the LTV validation process is not acceptable to continue the process!",
+          "The certificate chain for signature is not trusted, it does not contain a trust anchor.",
+          "The signature is not intact!"
+        ],
+        "Warnings": [
+          "The signature/seal is not a valid AdES digital signature!"
+        ],
+        "Infos": [],
+        "Id": "S-ED91BDEA8E48A4615273C35BA719C4179C60CB53A10AD647F9FB2A78EC69FBF2",
+        "CounterSignature": null,
+        "ParentId": null,
+        "SignatureFormat": "PAdES-BASELINE-B",
+        "ExtensionPeriodMin": null,
+        "ExtensionPeriodMax": null
+      }
+    }
+  ],
+  "Semantic": null,
+  "ValidationTime": "2021-03-27T23:34:58"
+}
