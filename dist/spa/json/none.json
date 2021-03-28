@@ -1,0 +1,13 @@
+{
+  "ValidationPolicy": {
+    "PolicyName": "QES AdESQC TL based",
+    "PolicyDescription": "Validate electronic signatures and indicates whether they are Advanced electronic Signatures (AdES), AdES supported by a Qualified Certificate (AdES/QC) or a\n\t\tQualified electronic Signature (QES). All certificates and their related chains supporting the signatures are validated against the EU Member State Trusted Lists (this includes\n\t\tsigner's certificate and certificates used to validate certificate validity status services - CRLs, OCSP, and time-stamps).\n\t"
+  },
+  "DocumentName": "none.pdf",
+  "ValidSignaturesCount": 0,
+  "SignaturesCount": 0,
+  "ContainerType": null,
+  "signatureOrTimestamp": null,
+  "Semantic": null,
+  "ValidationTime": "2021-03-28T15:36:42"
+}

@@ -1,19 +1,10 @@
 <template>
   <q-page class="div-container">
     <div class="q-pa-sm">
-      <div v-show="spinnerState">
-        <div class="q-pb-lg text-center">
-          <div>
-            <img src="/webverify/img/spinner.gif" alt="spinner" width="100px" />
-          </div>
-          <div class="q-mt-md text-primary">Loading...</div>
-        </div>
-      </div>
-
       <q-card>
         <q-card-section class="bg-amber-5 text-grey-9">
           <div class="text-h5">Upload signed document</div>
-          <div class="text-subtitle3">allowed formats: PDF, ZIP</div>
+          <div class="text-subtitle3">allowed formats: PDF, ODT, ZIP</div>
         </q-card-section>
 
         <q-card-section class="q-pa-lg">
@@ -33,36 +24,36 @@
           </div>
 
           <!-- form buttons -->
-          <div class="row justify-end">
-            <!-- <q-btn
-              @click="postDocument"
-              label="Post fetch"
-              type="reset"
-              color="green"
-              flat
-              class="q-ml-sm q-mt-md"
-            /> -->
-            <q-btn
-              @click="postDocumentAxios"
-              label="Verify"
-              type="reset"
-              color="primary"
-              class="q-ml-sm q-mt-md"
-            />
+          <div class="row justify-end" style="height:50px">
+            <span v-show="loading">
+              <q-btn flat disable class="q-ml-sm q-mt-md">
+                <img
+                  src="/webverify/img/spinner.gif"
+                  alt="spinner"
+                  height="30px"
+                />
+              </q-btn>
+            </span>
+            <span>
+              <q-btn
+                :disable="query.signedDocument.bytes ? false : true"
+                @click="postDocumentAxios"
+                label="Verify"
+                color="primary"
+                class="q-ml-sm q-mt-md"
+              />
+              <q-tooltip
+                v-if="!query.signedDocument.bytes"
+                content-style="font-size: 14px"
+              >
+                Please upload file
+              </q-tooltip>
+            </span>
           </div>
         </q-card-section>
       </q-card>
 
-      <div v-if="query.signedDocument.bytes" class="q-mt-lg file-content">
-        <div class="text-center"><p>PDF to base64</p></div>
-        <div>{{ query.signedDocument.bytes }}</div>
-      </div>
-      <div v-if="query.signedDocument.bytes" class="q-mt-lg file-content">
-        <div class="text-center"><p>Query JSON</p></div>
-        <div>{{ query }}</div>
-      </div>
-
-      <!-- response -->
+      <!-- RESPONSE -->
       <q-card v-if="answer" class="margin-top">
         <!-- response header -->
         <q-card-section class="bg-blue-5 text-white">
@@ -86,151 +77,207 @@
           </div>
 
           <!-- signatures array -->
-          <div
-            v-for="(signature, index) in answer.signatureOrTimestamp"
-            :key="signature.Signature.Id"
-            class="q-mb-md"
-          >
-            <q-list bordered class="rounded-borders">
-              <q-expansion-item
-                header-class="bg-blue-grey-1"
-                class="overflow-hidden"
-                style="border-radius: 4px"
-                expand-icon-class="text-black"
-                expand-separator
-                icon="link"
-                :label="signature.Signature.Id"
-              >
-                <q-card>
-                  <q-card-section>
-                    <q-markup-table
-                      flat
-                      dense
-                      separator="none"
-                      class="signature-data"
-                    >
-                      <tbody>
-                        <tr>
-                          <td class="text-left">
-                            Qualification:
-                          </td>
-                          <td class="text-left">
-                            {{ signature.Signature.SignatureLevel.value }}
-                            <span>
-                              <q-icon
-                                name="info_outline"
-                                class="text-teal"
-                                size="sm"
-                              />
-                              <q-tooltip
-                                transition-show="scale"
-                                transition-hide="scale"
-                                content-style="font-size: 12px"
+          <div v-if="answer.signatureOrTimestamp">
+            <div
+              v-for="(signature, index) in answer.signatureOrTimestamp"
+              :key="signature.Signature.Id"
+              class="q-mb-md"
+            >
+              <q-list bordered class="rounded-borders">
+                <q-expansion-item
+                  :header-class="signatureColor(signature.Signature.Indication)"
+                  class="overflow-hidden"
+                  style="border-radius: 4px"
+                  expand-icon-class="text-black"
+                  expand-separator
+                  :icon="signatureIcon(signature.Signature.Indication)"
+                  :label="'Signature ' + (index + 1)"
+                >
+                  <q-card>
+                    <q-card-section>
+                      <q-markup-table
+                        flat
+                        dense
+                        separator="none"
+                        class="signature-data"
+                      >
+                        <tbody>
+                          <!-- Qualification -->
+                          <tr>
+                            <td class="text-left">
+                              Qualification:
+                            </td>
+                            <td class="text-left">
+                              {{ signature.Signature.SignatureLevel.value }}
+                              <span>
+                                <q-icon
+                                  name="info_outline"
+                                  class="text-teal"
+                                  size="sm"
+                                />
+                                <q-tooltip
+                                  transition-show="scale"
+                                  transition-hide="scale"
+                                  content-style="font-size: 12px"
+                                >
+                                  {{
+                                    signature.Signature.SignatureLevel
+                                      .description
+                                  }}
+                                </q-tooltip>
+                              </span>
+                            </td>
+                          </tr>
+                          <!-- Signature format -->
+                          <tr>
+                            <td class="text-left">Signature format:</td>
+                            <td class="text-left">
+                              {{ signature.Signature.SignatureFormat }}
+                            </td>
+                          </tr>
+                          <!-- Indication -->
+                          <tr v-if="signature.Signature.Indication">
+                            <td class="text-left">Indication:</td>
+                            <td class="text-left">
+                              <q-chip
+                                dense
+                                square
+                                :color="
+                                  signatureIndication(
+                                    signature.Signature.Indication
+                                  )
+                                "
+                                text-color="white"
+                                :icon="
+                                  signatureIcon(signature.Signature.Indication)
+                                "
                               >
-                                {{
-                                  signature.Signature.SignatureLevel.description
-                                }}
-                              </q-tooltip>
-                            </span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="text-left">Signature format:</td>
-                          <td class="text-left">
-                            {{ signature.Signature.SignatureFormat }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="text-left">Indication:</td>
-                          <td class="text-left">
-                            <q-chip
-                              dense
-                              square
-                              color="teal"
-                              text-color="white"
-                              icon="check_circle"
-                            >
-                              {{ signature.Signature.Indication }}
-                            </q-chip>
-                          </td>
-                        </tr>
-                        <tr
-                          v-for="warning in signature.Signature.Warnings"
-                          :key="warning.key"
-                        >
-                          <td class="text-left"></td>
-                          <td class="text-left text-orange-10">
-                            {{ warning }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="text-left">Certificate Chain:</td>
-                          <td class="text-left">
-                            <div
-                              v-for="(certificate, index) in signature.Signature
-                                .CertificateChain.Certificate"
-                              :key="index"
-                            >
-                              <q-icon name="done" size="sm" class="text-teal" />
-                              {{ certificate.qualifiedName }}
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="text-left">On claimed time:</td>
-                          <td class="text-left">
-                            {{ signature.Signature.SigningTime }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="text-left">Best signature time:</td>
-                          <td class="text-left">
-                            0000-00-00Z00:00:00
-                            <span>
-                              <q-icon
-                                name="info_outline"
-                                class="text-teal"
-                                size="sm"
-                              />
-                              <q-tooltip
-                                transition-show="scale"
-                                transition-hide="scale"
-                                content-style="font-size: 12px"
+                                {{ signature.Signature.Indication }}
+                              </q-chip>
+                            </td>
+                          </tr>
+                          <!-- Sub indication -->
+                          <tr v-if="signature.Signature.SubIndication">
+                            <td class="text-left">Sub indication:</td>
+                            <td class="text-left">
+                              <q-chip
+                                dense
+                                square
+                                :color="
+                                  signatureIndication(
+                                    signature.Signature.Indication
+                                  )
+                                "
+                                text-color="white"
                               >
-                                Lowest time at which there exists a proof of
-                                existence for the signature
-                              </q-tooltip>
-                            </span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="text-left">Signature position:</td>
-                          <td class="text-left">
-                            {{ index + 1 }} out of
-                            {{ answer.signatureOrTimestamp.length }}
-                          </td>
-                        </tr>
-                        <tr
-                          v-for="(signaturescope, index) in signature.Signature
-                            .SignatureScope"
-                          :key="index"
-                        >
-                          <td class="text-left">Signature scope:</td>
-                          <td class="text-left">
-                            <div>
-                              {{ signaturescope.name }} ({{
-                                signaturescope.scope
-                              }})
-                            </div>
-                            <div>{{ signaturescope.value }}</div>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </q-markup-table>
-                  </q-card-section>
-                </q-card>
-              </q-expansion-item>
-            </q-list>
+                                {{ signature.Signature.SubIndication }}
+                              </q-chip>
+                            </td>
+                          </tr>
+                          <!-- Errors -->
+                          <tr v-if="signature.Signature.Errors.length > 0">
+                            <td class="text-left">Errors:</td>
+                            <td class="text-left text-red-9">
+                              <div
+                                v-for="(error, index) in signature.Signature
+                                  .Errors"
+                                :key="index"
+                              >
+                                {{ error }}
+                              </div>
+                            </td>
+                          </tr>
+                          <!-- Warnings -->
+                          <tr v-if="signature.Signature.Warnings.length > 0">
+                            <td class="text-left">Warnings:</td>
+                            <td class="text-left text-orange-10">
+                              <div
+                                v-for="(warning, index) in signature.Signature
+                                  .Warnings"
+                                :key="index"
+                              >
+                                {{ warning }}
+                              </div>
+                            </td>
+                          </tr>
+                          <!-- Certificate Chain -->
+                          <tr>
+                            <td class="text-left">Certificate Chain:</td>
+                            <td class="text-left">
+                              <div
+                                v-for="(certificate, index) in signature
+                                  .Signature.CertificateChain.Certificate"
+                                :key="index"
+                              >
+                                <q-icon
+                                  name="link"
+                                  size="sm"
+                                  class="text-grey-9"
+                                />
+                                {{ certificate.qualifiedName }}
+                              </div>
+                            </td>
+                          </tr>
+                          <!-- On claimed time -->
+                          <tr>
+                            <td class="text-left">On claimed time:</td>
+                            <td class="text-left">
+                              {{ signature.Signature.SigningTime }}
+                            </td>
+                          </tr>
+                          <!-- Best signature time -->
+                          <tr>
+                            <td class="text-left">Best signature time:</td>
+                            <td class="text-left">
+                              {{ signature.Signature.BestSignatureTime }}
+                              <span>
+                                <q-icon
+                                  name="info_outline"
+                                  class="text-teal"
+                                  size="sm"
+                                />
+                                <q-tooltip
+                                  transition-show="scale"
+                                  transition-hide="scale"
+                                  content-style="font-size: 12px"
+                                >
+                                  Lowest time at which there exists a proof of
+                                  existence for the signature
+                                </q-tooltip>
+                              </span>
+                            </td>
+                          </tr>
+                          <!-- Signature position -->
+                          <tr>
+                            <td class="text-left">Signature position:</td>
+                            <td class="text-left">
+                              {{ index + 1 }} out of
+                              {{ answer.signatureOrTimestamp.length }}
+                            </td>
+                          </tr>
+                          <!-- Signature scope -->
+                          <tr
+                            v-for="(signaturescope, index) in signature
+                              .Signature.SignatureScope"
+                            :key="index"
+                          >
+                            <td class="text-left">Signature scope:</td>
+                            <td class="text-left">
+                              <div>
+                                {{ signaturescope.name }} ({{
+                                  signaturescope.scope
+                                }})
+                              </div>
+                              <div>{{ signaturescope.value }}</div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </q-markup-table>
+                    </q-card-section>
+                  </q-card>
+                </q-expansion-item>
+              </q-list>
+            </div>
           </div>
 
           <!-- document information -->
@@ -250,10 +297,10 @@
                   <tbody>
                     <tr>
                       <td class="text-left">Signatures status:</td>
-                      <td class="text-left text-green">
-                        {{ answer.signatureOrTimestamp.length }} valid
-                        signatures, out of
-                        {{ answer.signatureOrTimestamp.length }}
+                      <td class="text-left">
+                        {{ answer.ValidSignaturesCount }} valid signatures, out
+                        of
+                        {{ answer.SignaturesCount }}
                       </td>
                     </tr>
                     <tr>
@@ -279,18 +326,18 @@ export default {
 
   data() {
     return {
-      answer: null,
-      model: null,
-      loading: false,
+      answer: null, // response from API
+      model: null, // binded value of input element
+      loading: false, // progress spinner status
       query: {
         signedDocument: {
           bytes: "",
           digestAlgorithm: null,
-          name: "test.pdf"
+          name: null
         },
         policy: null,
         signatureId: null
-      }
+      } // body of post query
     };
   },
 
@@ -318,22 +365,24 @@ export default {
         let pdfBase64String = String(pdfBase64);
         let pdfBase64Clean = pdfBase64String.replace(/^.*,/i, "");
         this.query.signedDocument.bytes = pdfBase64Clean;
+        this.query.signedDocument.name = file.name;
       } else {
-        this.query.signedDocument.bytes = "";
+        this.query.signedDocument.bytes = null;
+        this.query.signedDocument.name = null;
       }
       this.loading = false;
     },
 
     // render query answer
-    async receiveAnswer() {
-      const response = await fetch("json/answer.json");
-      if (response.ok) {
-        let json = await response.json();
-        this.answer = await json.SimpleReport;
-      } else {
-        alert("Data Error");
-      }
-    },
+    // async receiveAnswer() {
+    //   const response = await fetch("json/valid.json");
+    //   if (response.ok) {
+    //     let json = await response.json();
+    //     this.answer = await json.SimpleReport;
+    //   } else {
+    //     alert("Data Error");
+    //   }
+    // },
 
     // post document with fetch
     // postDocument() {
@@ -370,15 +419,57 @@ export default {
         }
       );
       this.loading = false;
-    }
-  },
+    },
 
-  computed: {
-    spinnerState: function() {
-      if (this.loading === true) {
-        return true;
-      } else {
-        return false;
+    signatureIndication(indication) {
+      switch (indication) {
+        case "TOTAL_FAILED":
+          return "red";
+        case "INDETERMINATE":
+          return "orange";
+        case "TOTAL_PASSED":
+          return "teal";
+        default:
+          return "grey";
+      }
+    },
+
+    signatureIcon(indication) {
+      switch (indication) {
+        case "TOTAL_FAILED":
+          return "highlight_off";
+        case "INDETERMINATE":
+          return "error_outline";
+        case "TOTAL_PASSED":
+          return "check_circle_outline";
+        default:
+          return "link";
+      }
+    },
+
+    signatureBackgroundColor(indication) {
+      switch (indication) {
+        case "TOTAL_FAILED":
+          return "bg-red-1";
+        case "INDETERMINATE":
+          return "bg-orange-1";
+        case "TOTAL_PASSED":
+          return "bg-blue-grey-1";
+        default:
+          return "bg-grey";
+      }
+    },
+
+    signatureColor(indication) {
+      switch (indication) {
+        case "TOTAL_FAILED":
+          return "text-red-9 bg-grey-1";
+        case "INDETERMINATE":
+          return "text-orange-9 bg-grey-1";
+        case "TOTAL_PASSED":
+          return "text-green-9 bg-grey-1";
+        default:
+          return "text-grey-9 bg-grey-1";
       }
     }
   }
