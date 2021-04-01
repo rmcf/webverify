@@ -419,10 +419,11 @@ export default {
 
     // post document with AXIOS
     async postDocumentAxios() {
+      this.loading = true;
       await this.$recaptchaLoaded();
       let token = await this.$recaptcha("login");
-      this.query.token = token;
-      this.loading = true;
+      // this.query.token = token;
+      console.log(token);
       const url =
         "https://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
       await axios.post(url, this.query).then(
