@@ -329,9 +329,9 @@
 </template>
 
 <script>
+import Vue from "vue";
 import axios from "axios";
 import { VueReCaptcha } from "vue-recaptcha-v3";
-Vue.use(VueReCaptcha, { siteKey: "6LfjdJgaAAAAAOG_aYerexEOyLJ-CUHrooALUgg8" });
 
 export default {
   name: "PageIndex",
@@ -487,6 +487,12 @@ export default {
           return "text-grey-9 bg-grey-1";
       }
     }
+  },
+
+  mounted() {
+    Vue.use(VueReCaptcha, {
+      siteKey: "6LfjdJgaAAAAAOG_aYerexEOyLJ-CUHrooALUgg8"
+    });
   }
 };
 </script>
