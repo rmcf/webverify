@@ -11,7 +11,16 @@
           WebVerify
         </q-toolbar-title>
 
-        <q-btn flat label="ABOUT" color="primary" />
+        <!-- <q-btn flat label="ABOUT" color="primary" /> -->
+        <div style="min-width: 100px">
+          <q-select
+            v-model="lang"
+            :options="langOptions"
+            emit-value
+            map-options
+            borderless
+          />
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -37,9 +46,9 @@
     <!-- banner -->
     <q-parallax :height="400" src="/webverify/img/banner.jpg">
       <div class="flex flex-center">
-        <h2 class="text-white banner-text">
-          Digital Signature Verification
-        </h2>
+        <div class="text-h3 text-white banner-text text-weight-light">
+          {{ $t("mainTitle") }}
+        </div>
       </div>
     </q-parallax>
 
@@ -47,6 +56,31 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <!-- footer -->
+    <q-footer reveal elevated class="bg-white text-blue-grey">
+      <q-toolbar>
+        <div
+          class="q-pa-md q-gutter-md fit row no-wrap justify-center items-center"
+        >
+          <div>
+            <q-btn
+              round
+              color="red"
+              icon="mail_outline"
+              type="a"
+              href="mailto:service@dmn.gov.ua"
+            />
+          </div>
+          <div>
+            <div class="text-subtitle1 text-weight-light">
+              {{ $t("footerSticky") }}
+            </div>
+            <div class="text-caption">service@dmn.gov.ua</div>
+          </div>
+        </div>
+      </q-toolbar>
+    </q-footer>
 
     <!-- footer -->
     <div class="bg-grey-8 text-white">
@@ -68,8 +102,8 @@
           />
         </div>
         <div style="max-width:300px;" class="footer-text text-body2">
-          Центральний засвідчувальний орган Міністерство цифрової трансформації
-          України {{ yearCurrent }}. Всі права захищені.
+          {{ $t("footerStatic") }} {{ yearCurrent }}.
+          {{ $t("allRightsReserved") }}.
         </div>
       </div>
     </div>
@@ -100,9 +134,24 @@ export default {
   data() {
     return {
       leftDrawerOpen: false,
-      essentialLinks: linksData
+      essentialLinks: linksData,
+      // internationalization
+      lang: this.$i18n.locale,
+      langOptions: [
+        { value: "en-us", label: "English" },
+        { value: "ua", label: "Українська" }
+      ]
     };
   },
+
+  watch: {
+    lang(lang) {
+      if (this.$i18n.locale !== lang) {
+        this.$i18n.locale = lang;
+      }
+    }
+  },
+
   computed: {
     // year in footer
     yearCurrent: function() {
@@ -124,7 +173,7 @@ export default {
 
 .footer-padding {
   padding-top: 4rem;
-  padding-bottom: 4rem;
+  padding-bottom: 7rem;
 }
 
 .footer-text {
@@ -135,6 +184,11 @@ export default {
 @media (max-width: 576px) {
   .footer-text {
     text-align: center;
+  }
+
+  .footer-padding {
+    padding-top: 2rem;
+    padding-bottom: 9rem;
   }
 
   .banner-text {

@@ -3,8 +3,10 @@
     <div class="q-pa-sm" style="margin-bottom: 5rem;">
       <q-card>
         <q-card-section class="bg-amber-5 text-grey-9">
-          <div class="text-h5">Upload signed document</div>
-          <div class="text-subtitle3">allowed formats: PDF, ODT, ZIP</div>
+          <div class="text-h5">{{ $t("uploadDocument") }}</div>
+          <div class="text-subtitle3">
+            {{ $t("allowedFormats") }}: PDF, ODT, ZIP
+          </div>
         </q-card-section>
 
         <q-card-section class="q-pa-lg">
@@ -15,7 +17,7 @@
               v-model="model"
               clearable
               @input="quasarFileInput"
-              label="Upload file"
+              :label="$t('uploadFileLable')"
             >
               <template v-slot:prepend>
                 <q-icon name="attach_file" />
@@ -38,7 +40,7 @@
               <q-btn
                 :disable="query.signedDocument.bytes ? false : true"
                 @click="postDocumentAxios"
-                label="Verify"
+                :label="$t('veryfyButton')"
                 color="primary"
                 class="q-ml-sm q-mt-md"
               />
@@ -46,7 +48,7 @@
                 v-if="!query.signedDocument.bytes"
                 content-style="font-size: 14px"
               >
-                Please upload file
+                {{ $t("veryfyButtonPopup") }}
               </q-tooltip>
             </span>
           </div>
@@ -62,8 +64,8 @@
         <q-card v-if="answer" class="margin-top" key="card-response">
           <!-- response header -->
           <q-card-section class="bg-blue-5 text-white">
-            <div class="text-h5">Validation results</div>
-            <div class="text-subtitle3">Simple Report</div>
+            <div class="text-h5">{{ $t("validationResults") }}</div>
+            <div class="text-subtitle3">{{ $t("simpleReport") }}</div>
           </q-card-section>
 
           <q-card-section class="section-padding">
@@ -71,12 +73,12 @@
             <div class="q-mb-md">
               <q-card flat bordered>
                 <q-card-section class="text-body1">
-                  Validation Policy :
+                  {{ $t("validationPolicy") }} :
                   {{ answer.ValidationPolicy.PolicyName }}
                 </q-card-section>
                 <q-separator inset />
                 <q-card-section>
-                  {{ answer.ValidationPolicy.PolicyDescription }}
+                  {{ $t("validationPolicyText") }}
                 </q-card-section>
               </q-card>
             </div>
@@ -98,7 +100,7 @@
                     expand-icon-class="text-black"
                     expand-separator
                     :icon="signatureIcon(signature.Signature.Indication)"
-                    :label="'Signature ' + (index + 1)"
+                    :label="$t('signature') + ' ' + (index + 1)"
                   >
                     <q-card>
                       <q-card-section>
@@ -112,7 +114,7 @@
                             <!-- Qualification -->
                             <tr>
                               <td class="text-left">
-                                Qualification:
+                                {{ $t("qualification") }}:
                               </td>
                               <td class="text-left">
                                 {{ signature.Signature.SignatureLevel.value }}
@@ -137,17 +139,18 @@
                             </tr>
                             <!-- Signature format -->
                             <tr>
-                              <td class="text-left">Signature format:</td>
+                              <td class="text-left">
+                                {{ $t("signatureFormat") }}:
+                              </td>
                               <td class="text-left">
                                 {{ signature.Signature.SignatureFormat }}
                               </td>
                             </tr>
                             <!-- Indication -->
                             <tr v-if="signature.Signature.Indication">
-                              <td class="text-left">Indication:</td>
+                              <td class="text-left">{{ $t("indication") }}:</td>
                               <td class="text-left">
                                 <q-chip
-                                  dense
                                   square
                                   :color="
                                     signatureIndication(
@@ -161,12 +164,16 @@
                                     )
                                   "
                                 >
-                                  {{ signature.Signature.Indication }}
+                                  {{
+                                    signatureIndicationTranslated(
+                                      signature.Signature.Indication
+                                    )
+                                  }}
                                 </q-chip>
                               </td>
                             </tr>
-                            <!-- Sub indication -->
-                            <tr v-if="signature.Signature.SubIndication">
+                            <!-- SUB INDICATION -->
+                            <!-- <tr v-if="signature.Signature.SubIndication">
                               <td class="text-left">Sub indication:</td>
                               <td class="text-left">
                                 <q-chip
@@ -182,9 +189,9 @@
                                   {{ signature.Signature.SubIndication }}
                                 </q-chip>
                               </td>
-                            </tr>
-                            <!-- Errors -->
-                            <tr v-if="signature.Signature.Errors.length > 0">
+                            </tr> -->
+                            <!-- ERRORS -->
+                            <!-- <tr v-if="signature.Signature.Errors.length > 0">
                               <td class="text-left">Errors:</td>
                               <td class="text-left text-red-9">
                                 <div
@@ -195,9 +202,9 @@
                                   {{ error }}
                                 </div>
                               </td>
-                            </tr>
-                            <!-- Warnings -->
-                            <tr v-if="signature.Signature.Warnings.length > 0">
+                            </tr> -->
+                            <!-- WARNINGS -->
+                            <!-- <tr v-if="signature.Signature.Warnings.length > 0">
                               <td class="text-left">Warnings:</td>
                               <td class="text-left text-orange-10">
                                 <div
@@ -208,10 +215,12 @@
                                   {{ warning }}
                                 </div>
                               </td>
-                            </tr>
+                            </tr> -->
                             <!-- Certificate Chain -->
                             <tr>
-                              <td class="text-left">Certificate Chain:</td>
+                              <td class="text-left">
+                                {{ $t("certificateChain") }}:
+                              </td>
                               <td class="text-left">
                                 <div
                                   v-for="(certificate, index) in signature
@@ -229,14 +238,18 @@
                             </tr>
                             <!-- On claimed time -->
                             <tr>
-                              <td class="text-left">On claimed time:</td>
+                              <td class="text-left">
+                                {{ $t("onClaimedTime") }}:
+                              </td>
                               <td class="text-left">
                                 {{ signature.Signature.SigningTime }}
                               </td>
                             </tr>
                             <!-- Best signature time -->
                             <tr>
-                              <td class="text-left">Best signature time:</td>
+                              <td class="text-left">
+                                {{ $t("bestSignatureTime") }}:
+                              </td>
                               <td class="text-left">
                                 {{ signature.Signature.BestSignatureTime }}
                                 <span>
@@ -250,22 +263,23 @@
                                     transition-hide="scale"
                                     content-style="font-size: 12px"
                                   >
-                                    Lowest time at which there exists a proof of
-                                    existence for the signature
+                                    {{ $t("bestSignatureTimePopup") }}
                                   </q-tooltip>
                                 </span>
                               </td>
                             </tr>
                             <!-- Signature position -->
                             <tr>
-                              <td class="text-left">Signature position:</td>
                               <td class="text-left">
-                                {{ index + 1 }} out of
+                                {{ $t("signaturePosition") }}:
+                              </td>
+                              <td class="text-left">
+                                {{ index + 1 }} {{ $t("signaturePositionOf") }}
                                 {{ answer.signatureOrTimestamp.length }}
                               </td>
                             </tr>
-                            <!-- Signature scope -->
-                            <tr
+                            <!-- SIGNATURE SCOPE -->
+                            <!-- <tr
                               v-for="(signaturescope, index) in signature
                                 .Signature.SignatureScope"
                               :key="index"
@@ -279,7 +293,7 @@
                                 </div>
                                 <div>{{ signaturescope.value }}</div>
                               </td>
-                            </tr>
+                            </tr> -->
                           </tbody>
                         </q-markup-table>
                       </q-card-section>
@@ -293,7 +307,7 @@
             <div class="q-mb-md">
               <q-card flat bordered>
                 <q-card-section class="text-body1">
-                  Document Information
+                  {{ $t("documentInfo") }}
                 </q-card-section>
                 <q-separator inset />
                 <q-card-section>
@@ -305,15 +319,15 @@
                   >
                     <tbody>
                       <tr>
-                        <td class="text-left">Signatures status:</td>
+                        <td class="text-left">{{ $t("signaturesStatus") }}:</td>
                         <td class="text-left">
-                          {{ answer.ValidSignaturesCount }} valid signatures,
-                          out of
+                          {{ answer.ValidSignaturesCount }}
+                          {{ $t("validSignatures") }}
                           {{ answer.SignaturesCount }}
                         </td>
                       </tr>
                       <tr>
-                        <td class="text-left">Document name:</td>
+                        <td class="text-left">{{ $t("documentName") }}:</td>
                         <td class="text-left">{{ answer.DocumentName }}</td>
                       </tr>
                     </tbody>
@@ -329,9 +343,14 @@
 </template>
 
 <script>
-import Vue from "vue";
 import axios from "axios";
-import { VueReCaptcha } from "vue-recaptcha-v3";
+// import { VueReCaptcha } from "vue-recaptcha-v3";
+// Vue.use(VueReCaptcha, {
+//   siteKey: "6LfjdJgaAAAAAOG_aYerexEOyLJ-CUHrooALUgg8",
+//   loaderOptions: {
+//     useRecaptchaNet: true
+//   }
+// });
 
 export default {
   name: "PageIndex",
@@ -385,45 +404,16 @@ export default {
       this.loading = false;
     },
 
-    // render query answer
-    // async receiveAnswer() {
-    //   const response = await fetch("json/valid.json");
-    //   if (response.ok) {
-    //     let json = await response.json();
-    //     this.answer = await json.SimpleReport;
-    //   } else {
-    //     alert("Data Error");
-    //   }
-    // },
-
-    // post document with fetch
-    // postDocument() {
-    //   console.log("Fetch post:");
-    //   const url =
-    //     "https://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
-    //   fetch(url, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json;charset=utf-8"
-    //     },
-    //     body: JSON.stringify(this.query)
-    //   })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //       console.log("Success:", data);
-    //     })
-    //     .catch(error => {
-    //       console.log("Error:", error);
-    //     });
-    // },
-
     // post document with AXIOS
     async postDocumentAxios() {
       this.loading = true;
-      await this.$recaptchaLoaded();
-      let token = await this.$recaptcha("login");
-      // this.query.token = token;
-      console.log(token);
+
+      // RECAPTCHA 3
+      // await this.$recaptchaLoaded();
+      // let token = await this.$recaptcha("login");
+      // console.log(token);
+
+      // post request
       const url =
         "https://webapp.edoc.link/dss-webapp/services/rest/validation/validateSignature";
       await axios.post(url, this.query).then(
@@ -437,6 +427,7 @@ export default {
       this.loading = false;
     },
 
+    // chip color
     signatureIndication(indication) {
       switch (indication) {
         case "TOTAL_FAILED":
@@ -450,6 +441,7 @@ export default {
       }
     },
 
+    // chip icon
     signatureIcon(indication) {
       switch (indication) {
         case "TOTAL_FAILED":
@@ -463,19 +455,7 @@ export default {
       }
     },
 
-    signatureBackgroundColor(indication) {
-      switch (indication) {
-        case "TOTAL_FAILED":
-          return "bg-red-1";
-        case "INDETERMINATE":
-          return "bg-orange-1";
-        case "TOTAL_PASSED":
-          return "bg-blue-grey-1";
-        default:
-          return "bg-grey";
-      }
-    },
-
+    // expansion item color
     signatureColor(indication) {
       switch (indication) {
         case "TOTAL_FAILED":
@@ -487,13 +467,19 @@ export default {
         default:
           return "text-grey-9 bg-grey-1";
       }
-    }
-  },
+    },
 
-  mounted() {
-    Vue.use(VueReCaptcha, {
-      siteKey: "6LfjdJgaAAAAAOG_aYerexEOyLJ-CUHrooALUgg8"
-    });
+    // indication translated
+    signatureIndicationTranslated(indication) {
+      switch (indication) {
+        case "TOTAL_FAILED":
+          return this.$t("indication_TOTAL_FAILED");
+        case "INDETERMINATE":
+          return this.$t("indication_INDETERMINATE");
+        case "TOTAL_PASSED":
+          return this.$t("indication_TOTAL_PASSED");
+      }
+    }
   }
 };
 </script>
